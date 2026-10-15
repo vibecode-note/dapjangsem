@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>답장셈 · 그 답장, 몇 도야?</title>
+<meta name="description" content="받은 카톡 답장을 넣으면 답장 속도·길이·ㅋ 개수·비꼬기까지 따져서 온도로 알려줘요. 재미로만!">
+<meta name="theme-color" content="#FFF8F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="답장셈">
+<meta property="og:title" content="답장셈 · 그 답장, 몇 도야?">
+<meta property="og:description" content="“ㅇㅇ” 3시간 뒤에 왔으면 몇 도일까? 🌡️">
+<meta property="og:url" content="https://vibecode-note.github.io/dapjangsem/">
+<meta property="og:image" content="https://vibecode-note.github.io/dapjangsem/icons/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Gothic+A1:wght@500;700;800&display=swap">
+<style>
+:root {
+  --bg: #FFF8F3; --ink: #1D1A26; --sub: #7A7488; --body: #4A4458; --faint: #9A93A8; --line: #E7E1F2;
+  --cold: #3E6BE0; --hot: #FF4F6E; --lilac: #EDE7FF; --card: #F1ECFA; --violet: #6B4FD8;
+  --fat: 'Bagel Fat One', 'Gothic A1', sans-serif;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+body { margin: 0; min-height: 100dvh; color: var(--ink); background: var(--bg); font-family: 'Gothic A1', -apple-system, system-ui, sans-serif; font-weight: 500; letter-spacing: -0.01em; }
+.app { max-width: 440px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 24px) 24px calc(env(safe-area-inset-bottom) + 28px); min-height: 100dvh; display: flex; flex-direction: column; gap: 20px; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid var(--violet); outline-offset: 2px; }
+button, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+.top { display: flex; align-items: center; justify-content: space-between; }
+.logo { margin: 0; font-family: var(--fat); font-weight: 400; font-size: 24px; }
+.badge { font-size: 12px; font-weight: 700; color: var(--violet); background: var(--lilac); padding: 5px 10px; border-radius: 999px; }
+.back { border: 0; background: none; padding: 4px 0; color: var(--sub); font-weight: 700; font-size: 15px; }
+h2.title { margin: 0; font-family: var(--fat); font-weight: 400; font-size: 40px; line-height: 1.15; }
+.lead { margin: 8px 0 0; color: var(--sub); font-size: 15px; }
+
+/* 대화 카드 */
+.chat { background: var(--card); border-radius: 24px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.msg { display: flex; align-items: flex-end; gap: 6px; }
+.msg.me { flex-direction: row-reverse; }
+.bubble { field-sizing: content; min-width: 56px; max-width: 78%; min-height: 0; resize: none; border: 0; margin: 0; padding: 11px 16px; font-size: 15px; line-height: 1.45; border-radius: 20px; overflow: hidden; }
+.me .bubble { color: #fff; background: linear-gradient(90deg, #FF7A6B, #FF4F8B); border-bottom-right-radius: 6px; }
+.me .bubble::placeholder { color: rgba(255,255,255,.75); }
+.them .bubble { background: #fff; box-shadow: inset 0 0 0 1px var(--line); border-bottom-left-radius: 6px; }
+.them .bubble::placeholder { color: var(--faint); }
+.del { border: 0; background: none; color: var(--faint); font-size: 14px; padding: 6px; opacity: .7; }
+#msgs { display: flex; flex-direction: column; }
+.gap { align-self: center; font-size: 12px; font-weight: 700; color: var(--sub); background: rgba(255,255,255,.7); padding: 4px 10px; border-radius: 999px; }
+.adders { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.add { border: 1px dashed #C9BFE0; background: none; color: var(--violet); font-weight: 700; font-size: 13px; padding: 8px 12px; border-radius: 999px; }
+
+.q { margin: 0 0 10px; font-size: 15px; font-weight: 800; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border: 0; background: #fff; box-shadow: inset 0 0 0 1px var(--line); color: var(--body); font-size: 14px; font-weight: 500; padding: 9px 14px; border-radius: 999px; }
+.chip[aria-pressed=true] { background: var(--ink); color: #fff; font-weight: 700; box-shadow: none; }
+.grow { flex: 1; }
+.cta { width: 100%; height: 56px; border: 0; border-radius: 18px; color: #fff; font-weight: 800; font-size: 17px; background: linear-gradient(90deg, #5B8CFF, #FF5A7A); box-shadow: 0 8px 20px -4px rgba(255,90,122,.35); }
+.cta:disabled { opacity: .45; box-shadow: none; }
+.ghost { width: 100%; height: 56px; border-radius: 18px; background: #fff; border: 1.5px solid var(--ink); font-weight: 800; font-size: 17px; }
+.note { margin: -8px 0 0; text-align: center; font-size: 12px; color: var(--faint); }
+.cta:active, .ghost:active, .chip:active, .add:active { transform: scale(.98); }
+
+/* 결과 */
+.hero { border-radius: 28px; padding: 24px 22px 22px; display: flex; flex-direction: column; align-items: center; gap: 14px; background: linear-gradient(180deg, var(--h1), var(--h2)); text-align: center; }
+.cond { font-size: 13px; font-weight: 700; color: var(--body); background: rgba(255,255,255,.75); padding: 6px 12px; border-radius: 999px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.temp { font-family: var(--fat); color: var(--tc); font-size: 84px; line-height: 1; display: flex; align-items: flex-start; font-variant-numeric: tabular-nums; }
+.temp small { font-size: 30px; margin-top: 6px; }
+.lv { margin: 0; font-size: 22px; font-weight: 800; }
+.desc { margin: 0; font-size: 14px; line-height: 1.5; color: var(--body); white-space: pre-line; }
+.gauge { width: 100%; }
+.track { position: relative; height: 14px; border-radius: 999px; background: linear-gradient(90deg, #5B8CFF, #C8B6FF, #FF5A7A); }
+.pin { position: absolute; top: -5px; width: 24px; height: 24px; margin-left: -12px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); transition: left .9s cubic-bezier(.2,.9,.3,1.2); }
+.ticks { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--sub); }
+.box { border-radius: 24px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; }
+.why { background: #fff; box-shadow: inset 0 0 0 1px #EEE8F6; }
+.box h3 { margin: 0; font-size: 16px; font-weight: 800; }
+.row { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--body); line-height: 1.3; }
+.row span:nth-child(2) { flex: 1; }
+.row b { font-weight: 800; font-size: 15px; white-space: nowrap; }
+.row b.minus { color: var(--cold); } .row b.plus { color: var(--hot); } .row b.base { color: var(--ink); }
+.sum { display: flex; align-items: center; border-top: 1px solid #EEE8F6; padding-top: 12px; font-weight: 800; }
+.sum span { flex: 1; } .sum b { font-family: var(--fat); font-weight: 400; font-size: 20px; color: var(--tc); }
+.say { background: #FFF0EC; }
+.say header { display: flex; align-items: center; justify-content: space-between; }
+.copy { border: 0; background: var(--ink); color: #fff; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 999px; }
+.say .bubble { align-self: flex-end; max-width: 90%; }
+.tip { margin: 0; font-size: 13px; color: #9A6B62; }
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 24px); transform: translateX(-50%); background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 14px; font-size: 14px; font-weight: 700; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; }
+.toast.on { opacity: 1; }
+
+dialog { border: 0; border-radius: 24px; padding: 20px; width: min(92vw, 400px); color: var(--ink); }
+dialog::backdrop { background: rgba(29,26,38,.45); }
+dialog h3 { margin: 0 0 6px; font-size: 17px; font-weight: 800; }
+dialog p { margin: 0 0 12px; font-size: 13px; color: var(--sub); line-height: 1.5; }
+dialog textarea { width: 100%; height: 160px; border: 0; border-radius: 14px; background: var(--card); padding: 12px; font-size: 14px; resize: vertical; }
+dialog .two { display: flex; gap: 8px; margin-top: 12px; }
+dialog .two button { flex: 1; height: 48px; border-radius: 14px; font-weight: 800; border: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<main class="app" id="input">
+  <header class="top"><h1 class="logo">답장셈</h1><span class="badge">재미로만 🙏</span></header>
+  <div>
+    <h2 class="title">그 답장,<br>몇 도야?</h2>
+    <p class="lead">받은 카톡을 넣으면 온도로 알려줄게요</p>
+  </div>
+
+  <section class="chat" aria-label="대화">
+    <div id="msgs"></div>
+    <div class="adders">
+      <button class="add" data-add="me">＋ 내 말</button>
+      <button class="add" data-add="them">＋ 상대 말</button>
+      <button class="add" id="pasteBtn">📋 붙여넣기</button>
+    </div>
+  </section>
+
+  <section><p class="q" id="qTime">답장은 언제 왔어?</p><div class="chips" id="times" role="group" aria-labelledby="qTime"></div></section>
+  <section><p class="q" id="qRel">어떤 사이야?</p><div class="chips" id="rels" role="group" aria-labelledby="qRel"></div></section>
+
+  <div class="grow"></div>
+  <button class="cta" id="go">온도 재기</button>
+  <p class="note">🔒 대화는 이 폰 밖으로 안 나가요</p>
+</main>
+
+<main class="app" id="result" hidden aria-live="polite">
+  <header class="top"><button class="back" id="back">‹&nbsp; 다시 넣기</button><span class="logo" style="font-size:18px">답장셈</span></header>
+  <section class="hero" id="hero">
+    <span class="cond" id="cond"></span>
+    <div class="temp" aria-label="답장 온도"><span id="temp">0</span><small>°C</small></div>
+    <p class="lv" id="lv"></p>
+    <p class="desc" id="desc"></p>
+    <div class="gauge" aria-hidden="true">
+      <div class="track"><i class="pin" id="pin" style="left:0"></i></div>
+      <div class="ticks"><span>❄️ 냉랭</span><span>🙂 미지근</span><span>🔥 설렘</span></div>
+    </div>
+  </section>
+  <section class="box why"><h3 id="whyT"></h3><div id="rows" style="display:contents"></div><div class="sum"><span>답장 온도</span><b id="sum"></b></div></section>
+  <section class="box say">
+    <header><h3>이렇게 답해 봐 💬</h3><button class="copy" id="copy">복사</button></header>
+    <div class="msg me" style="justify-content:flex-start"><div class="bubble" id="sayText"></div></div>
+    <p class="tip" id="tip"></p>
+  </section>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <button class="cta" id="card">결과 카드 저장 📸</button>
+    <button class="ghost" id="again">다른 답장 재기</button>
+  </div>
+  <p class="note" style="margin:0">재미용이에요. 진짜 마음은 직접 물어보기 🙏</p>
+</main>
+
+<dialog id="paste">
+  <h3>📋 카톡 대화 붙여넣기</h3>
+  <p>카톡에서 메시지를 길게 눌러 복사한 뒤 붙여넣어 주세요. PC 카톡에서 여러 개를 복사하면 보낸 시각으로 답장 시간도 알아서 골라요.</p>
+  <textarea id="pasteText" placeholder="[민지] [오후 4:02] 내일 영화 볼래?&#10;[준호] [오후 7:15] ㅇㅇ" aria-label="붙여넣을 대화"></textarea>
+  <div class="two"><button id="pasteNo" style="background:var(--card)">취소</button><button id="pasteOk" style="background:var(--ink);color:#fff">불러오기</button></div>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import { TIMES, RELS, measure, parseKakao, timeFromGap, gauge } from './reply.js';
+
+const KEY = 'dapjangsem-v1';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+const sample = () => ({ msgs: [{ who: 'me', text: '내일 영화 볼래? 🥺' }, { who: 'them', text: 'ㅇㅇ' }], time: 'hours', rel: 'some' });
+let st;
+try { st = JSON.parse(localStorage.getItem(KEY)); } catch {}
+if (!st || !Array.isArray(st.msgs)) st = sample();
+let res = null;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch {} };
+const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// 입력 화면
+function lastMeIdx() { let i = st.msgs.length; while (i > 0 && st.msgs[i - 1].who === 'them') i--; return i; }
+function renderMsgs() {
+  const cut = lastMeIdx(), t = TIMES.find((x) => x.id === st.time);
+  $('msgs').innerHTML = st.msgs.map((m, k) => `
+    ${k === cut && k > 0 ? `<div class="gap" style="margin-bottom:10px">⏱ ${t.id === 'fast' ? '바로 답장' : esc(t.label)}</div>` : ''}
+    <div class="msg ${m.who}" style="margin-bottom:10px">
+      <textarea class="bubble" rows="1" data-k="${k}" placeholder="${m.who === 'me' ? '내가 보낸 말' : '상대 답장'}" aria-label="${m.who === 'me' ? '내 말' : '상대 말'} ${k + 1}">${esc(m.text)}</textarea>
+      <button class="del" data-del="${k}" aria-label="말풍선 지우기">✕</button>
+    </div>`).join('');
+  $('msgs').querySelectorAll('textarea').forEach(fit);
+  $('go').disabled = !measure(st.msgs);
+}
+const fit = (ta) => { if (CSS.supports('field-sizing', 'content')) return; ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; };
+function renderChips() {
+  $('times').innerHTML = TIMES.map((t) => `<button class="chip" data-time="${t.id}" aria-pressed="${t.id === st.time}">${t.label}</button>`).join('');
+  $('rels').innerHTML = RELS.map((r) => `<button class="chip" data-rel="${r.id}" aria-pressed="${r.id === st.rel}">${r.label}</button>`).join('');
+}
+function render() { renderMsgs(); renderChips(); save(); }
+
+$('msgs').addEventListener('input', (e) => { const k = e.target.dataset.k; if (k == null) return; st.msgs[k].text = e.target.value; fit(e.target); $('go').disabled = !measure(st.msgs); save(); });
+$('msgs').addEventListener('click', (e) => { const d = e.target.closest('[data-del]'); if (d) { st.msgs.splice(+d.dataset.del, 1); render(); } });
+document.querySelectorAll('[data-add]').forEach((b) => b.onclick = () => {
+  st.msgs.push({ who: b.dataset.add, text: '' }); render();
+  const all = $('msgs').querySelectorAll('textarea'); all[all.length - 1]?.focus();
+});
+$('times').onclick = (e) => { const b = e.target.closest('[data-time]'); if (b) { st.time = b.dataset.time; render(); } };
+$('rels').onclick = (e) => { const b = e.target.closest('[data-rel]'); if (b) { st.rel = b.dataset.rel; render(); } };
+
+// 붙여넣기
+$('pasteBtn').onclick = async () => {
+  $('pasteText').value = '';
+  $('paste').showModal();
+  try { const t = await navigator.clipboard.readText(); if (t && !$('pasteText').value) $('pasteText').value = t; } catch {}
+};
+$('pasteNo').onclick = () => $('paste').close();
+$('pasteOk').onclick = () => {
+  const { msgs, gap } = parseKakao($('pasteText').value);
+  if (!msgs.length) return toast('붙여넣은 내용이 없어요');
+  st.msgs = msgs;
+  const t = timeFromGap(gap); if (t) st.time = t;
+  $('paste').close(); render();
+  toast(t ? '답장 시간도 자동으로 골랐어요 ⏱' : '불러왔어요! 답장 시간을 골라 주세요');
+};
+
+// 결과 화면
+const tone = (t) => t < 20 ? ['#3E6BE0', '#D9E6FF', '#F3EEFF'] : t < 40 ? ['#7C5CE0', '#EDE7FF', '#FFF0F5'] : ['#FF4F6E', '#FFE1E1', '#FFF3E6'];
+const short = (s, n) => { const g = [...new Intl.Segmenter('ko', { granularity: 'grapheme' }).segment(s.replace(/\s+/g, ' '))].map((x) => x.segment); return g.length > n ? g.slice(0, n).join('') + '…' : g.join(''); };
+const fmtD = (d) => (d > 0 ? '+' : d < 0 ? '−' : '') + Math.abs(d).toFixed(1) + '°';
+function showResult() {
+  res = measure(st.msgs, st.time, st.rel); if (!res) return;
+  const [tc, h1, h2] = tone(res.temp), hero = $('hero'), app = $('result');
+  app.style.setProperty('--tc', tc); hero.style.setProperty('--h1', h1); hero.style.setProperty('--h2', h2);
+  const rel = RELS.find((r) => r.id === st.rel), tm = TIMES.find((x) => x.id === st.time);
+  $('cond').textContent = `${rel.label} · ${tm.label} · “${short(res.reply, 10)}”`;
+  $('lv').textContent = `${res.emoji} ${res.name}`;
+  $('desc').textContent = res.desc;
+  $('whyT').textContent = `왜 ${res.temp.toFixed(1)}°일까?`;
+  $('rows').innerHTML = res.items.map((x, i) => `<div class="row"><span aria-hidden="true">${x.e}</span><span>${esc(x.why)}</span><b class="${i === 0 ? 'base' : x.d < 0 ? 'minus' : 'plus'}">${i === 0 ? x.d.toFixed(1) + '°' : fmtD(x.d)}</b></div>`).join('');
+  $('sum').textContent = res.temp.toFixed(1) + '°';
+  $('sayText').textContent = res.say; $('tip').textContent = res.tip;
+  $('input').hidden = true; app.hidden = false; scrollTo(0, 0);
+  // 숫자 올라가기 + 핀 이동
+  const pin = $('pin'); pin.style.left = '0%';
+  requestAnimationFrame(() => requestAnimationFrame(() => { pin.style.left = gauge(res.temp) * 100 + '%'; }));
+  const el = $('temp'), end = res.temp, t0 = performance.now(), dur = still ? 0 : 900;
+  const step = (now) => { const p = dur ? Math.min(1, (now - t0) / dur) : 1; el.textContent = (36.5 + (end - 36.5) * (1 - (1 - p) ** 3)).toFixed(1); if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+$('go').onclick = showResult;
+$('back').onclick = $('again').onclick = () => { $('result').hidden = true; $('input').hidden = false; scrollTo(0, 0); };
+$('copy').onclick = async () => { try { await navigator.clipboard.writeText(res.say); toast('복사했어요! 카톡에 붙여넣기 💬'); } catch { toast('복사가 안 되는 브라우저예요'); } };
+
+// 결과 카드 (9:16 PNG) — 피그마 03 공유 카드
+function rr(c, x, y, w, h, r) { const R = Array.isArray(r) ? r : [r, r, r, r]; c.beginPath(); c.roundRect(x, y, w, h, R); }
+async function drawCard() {
+  await Promise.all(['400 100px "Bagel Fat One"', '800 40px "Gothic A1"', '700 40px "Gothic A1"', '500 40px "Gothic A1"'].map((f) => document.fonts.load(f, '답장셈0123456789.°C ㅇ')));
+  const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const c = cv.getContext('2d'), [tc] = tone(res.temp), X = 84;
+  let g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#C9DBFF'); g.addColorStop(0.55, '#EEE7FF'); g.addColorStop(1, '#FFF8F3');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.textBaseline = 'alphabetic';
+  c.fillStyle = '#4A4458'; c.font = '700 39px "Gothic A1"'; c.fillText('답장 온도 측정 결과', X, 160);
+  c.fillStyle = '#1D1A26'; c.font = '48px "Bagel Fat One"'; c.textAlign = 'right'; c.fillText('답장셈', W - X, 164); c.textAlign = 'left';
+  const tm = TIMES.find((x) => x.id === st.time);
+  c.fillStyle = '#7A7488'; c.font = '700 36px "Gothic A1"'; c.fillText(`⏱ ${tm.id === 'fast' ? '바로' : tm.label} 도착`, X, 290);
+  // 상대 말풍선
+  c.font = '500 72px "Gothic A1"'; const txt = short(res.reply, 12), tw = Math.min(c.measureText(txt).width, W - 2 * X - 96);
+  rr(c, X, 326, tw + 96, 150, [60, 60, 60, 18]); c.fillStyle = '#fff'; c.fill();
+  c.fillStyle = '#1D1A26'; c.fillText(txt, X + 48, 426, W - 2 * X - 96);
+  // 온도
+  c.fillStyle = tc; c.font = '336px "Bagel Fat One"'; const num = res.temp.toFixed(1), nw = c.measureText(num).width;
+  c.font = '108px "Bagel Fat One"'; const uw = c.measureText('°C').width, sx = (W - nw - uw - 6) / 2;
+  c.font = '336px "Bagel Fat One"'; c.fillText(num, sx, 900);
+  c.font = '108px "Bagel Fat One"'; c.fillText('°C', sx + nw + 6, 690);
+  c.fillStyle = '#1D1A26'; c.font = '800 78px "Gothic A1"'; c.textAlign = 'center'; c.fillText(`${res.emoji} ${res.name}`, W / 2, 1060); c.textAlign = 'left';
+  // 게이지
+  const gw = W - 2 * X, gy = 1160; g = c.createLinearGradient(X, 0, X + gw, 0); g.addColorStop(0, '#5B8CFF'); g.addColorStop(0.5, '#C8B6FF'); g.addColorStop(1, '#FF5A7A');
+  rr(c, X, gy, gw, 42, 21); c.fillStyle = g; c.fill();
+  c.beginPath(); c.arc(X + gw * gauge(res.temp), gy + 21, 36, 0, Math.PI * 2); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 9; c.strokeStyle = '#1D1A26'; c.stroke();
+  c.fillStyle = '#4A4458'; c.font = '700 36px "Gothic A1"';
+  c.fillText('❄️ 냉랭', X, gy + 110); c.textAlign = 'center'; c.fillText('🙂 미지근', W / 2, gy + 110); c.textAlign = 'right'; c.fillText('🔥 설렘', W - X, gy + 110); c.textAlign = 'center';
+  // 하단
+  rr(c, X, 1600, gw, 236, 60); c.fillStyle = 'rgba(255,255,255,.7)'; c.fill();
+  c.fillStyle = '#1D1A26'; c.font = '800 48px "Gothic A1"'; c.fillText('너의 답장은 몇 도? 🌡️', W / 2, 1704);
+  c.fillStyle = '#7A7488'; c.font = '500 36px "Gothic A1"'; c.fillText('@vibecode.note 프로필 링크에서 재보기', W / 2, 1774);
+  return new Promise((ok) => cv.toBlob(ok, 'image/png'));
+}
+$('card').onclick = async () => {
+  const blob = await drawCard(), file = new File([blob], `답장셈-${res.temp.toFixed(1)}도.png`, { type: 'image/png' });
+  try { if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], text: `이 답장 ${res.temp.toFixed(1)}° ${res.emoji} 너의 답장은 몇 도?` }); return; } } catch (e) { if (e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000); toast('결과 카드를 저장했어요 📸');
+};
+
+function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2200); }
+render();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "답장셈 · 그 답장, 몇 도야?",
+  "short_name": "답장셈",
+  "description": "받은 카톡 답장을 넣으면 답장 속도·길이·ㅋ 개수·비꼬기까지 따져서 온도로 알려줘요.",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF8F3",
+  "theme_color": "#FFF8F3",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
